@@ -1,0 +1,144 @@
+#!/bin/bash
+    #while-menu:a menu-driven system information program
+    #incicio
+    #funções
+
+    DIALOG_CANCEL=1
+    DIALOG_ESC=255
+    HEIGHT=0
+    WIDTH=0
+
+    display_result() {
+    dialog --title "$1" \
+        --no-collapse \
+        --msgbox "$result" 0 0
+    }
+
+   inicio(){
+ dialog --yesno  "Voce quer visitar o nosso programa de instalação/desinstalação de pacotes?" 0 0
+if [ "$?" = "0" ]
+then
+        for i in $(seq 0 20 100) ; do sleep 1; echo $i | dialog --gauge "Please wait" 10 70 0; done
+    tela_inicial
+else
+    exit
+fi
+    clear
+}
+    tela_inicial() {
+    while true; do
+    exec 3>&1
+    teste=$(dialog \
+     --title "Menu" \
+    --backtitle "Tela de Opção" \
+    --clear \
+    --cancel-label "Sair" \
+    --menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
+    "1" "Instalar apache2" \
+    "2" "Instalar Squid3" \
+    "3" "Desinstalar Programas" \
+    2>&1 1>&3)
+    exit_status=$?
+    exec 3>&-
+    case $exit_status in
+    $DIALOG_CANCEL)
+    clear
+    echo "Programa cancelado."
+    exit 1
+    ;;
+    $DIALOG_ESC)
+    clear
+    echo "Programa fechado.">&2
+    exit 1
+    ;;
+    esac
+    case $teste in
+    0 )
+    clear
+        echo "programa encerrado"
+        ;;
+    1 )
+    if ! for i in $(seq 0 10 100) ; do sleep 1; echo $i | dialog --gauge "Please wait" 10 70 0; done
+    apt-get install apache2
+    display_result "apache2 instalado com sucesso"
+    clear
+    then
+    clear
+    fi
+    ;;
+    2 )
+    if ! for i in $(seq 0 10 100) ; do sleep 1; echo $i | dialog --gauge "Please wait" 10 70 0; done
+    apt-get install squid3
+    display_result "squid3 instalado com sucesso"
+    clear
+    then
+    clear
+            fi
+    ;;
+    3 )
+    desinstalar_programas
+    ;;
+    esac
+        done
+ }
+
+
+    desinstalar_programas() {
+    while true; do
+    exec 3>&1
+    teste=$(dialog \
+    --title "Desisntalação" \
+    --backtitle "Opção de desisntalar" \
+    --clear \
+    --cancel-label "Voltar" \
+    --menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
+    "1" "Desisntalar apache2" \
+    "2" "Desisntalar squid3" \
+    2>&1 1>&3)
+    exit_status=$?
+    exec 3>&-
+    case $exit_status in
+    $DIALOG_CANCEL)
+    echo "Tela inicial."
+    tela_inicial
+    exit
+    ;;
+    $DIALOG_ESC)
+    clear
+    echo "Programa fechado.">&2
+    exit 1
+    ;;
+    esac
+    case $teste in
+    0 )
+    clear
+    echo "Programa encerrado"
+        ;;
+    1 )
+    if ! apt-get remove apache2
+        display_result "apache2 desinstalado"
+         clear
+    then
+    clear
+            fi
+    ;;
+    2 )
+    if ! apt-get remove squid3
+        display_result "Squid3 desinstalado"
+         clear
+    then
+    clear
+            fi
+    ;;
+    esac
+        done
+        }
+        senha="senha"
+checkPass() {
+  PASSWORD=$(dialog --title "TITULO" --stdout --passwordbox 'Enter password: ' 0 0)
+}
+checkPass
+while [ "$senha" != "$PASSWORD" ]; do
+  checkPass
+done
+  inicio
